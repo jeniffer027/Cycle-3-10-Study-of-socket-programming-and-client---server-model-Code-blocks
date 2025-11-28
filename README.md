@@ -20,114 +20,88 @@ To write a Socket program to transfer data between Client and Server.
 
 ## 💻 PROGRAM
 
-### 🔸 SERVER
+if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
 
-Server Side:
-
-#include <stdio.h>
-#include <winsock2.h>
-
-int main() {
-    WSADATA wsa;
-    SOCKET server_sock, client_sock;
-    struct sockaddr_in server, client;
-    int c, recv_size;
-    char client_message[2000];
-
-    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
-        printf("WSAStartup failed: %d\n", WSAGetLastError());
-        return 1;
-    }
-
-    server_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_sock == INVALID_SOCKET) {
-        printf("Could not create socket: %d\n", WSAGetLastError());
-        WSACleanup(); return 1;
-    }
-
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(8888);
-
-    if (bind(server_sock, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
-        printf("Bind failed: %d\n", WSAGetLastError());
-        closesocket(server_sock); WSACleanup(); return 1;
-    }
-    puts("Bind done. Listening on port 8888...");
-
-    listen(server_sock, 3);
-
-    c = sizeof(struct sockaddr_in);
-    client_sock = accept(server_sock, (struct sockaddr *)&client, &c);
-    if (client_sock == INVALID_SOCKET) {
-        printf("Accept failed: %d\n", WSAGetLastError());
-        closesocket(server_sock); WSACleanup(); return 1;
-    }
-    puts("Client connected.");
-
-    while ((recv_size = recv(client_sock, client_message, sizeof(client_message)-1, 0)) > 0) {
-        client_message[recv_size] = '\0';
-        send(client_sock, client_message, recv_size, 0);
-    }
-
-    if (recv_size == 0) puts("Client disconnected");
-    else printf("recv failed: %d\n", WSAGetLastError());
-
-    closesocket(client_sock);
-    closesocket(server_sock);
-    WSACleanup();
-    return 0;
-}
-Client Side:
-
-#include <stdio.h>
-#include <string.h>
-#include <winsock2.h>
-
-int main() {
-    WSADATA wsa;
-    SOCKET sock;
-    struct sockaddr_in server;
-    char message[1000], server_reply[2000];
-    int recv_size;
-
-    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
-        printf("WSAStartup failed: %d\n", WSAGetLastError());
-        return 1;
-    }
-
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == INVALID_SOCKET) {
-        printf("Socket creation failed: %d\n", WSAGetLastError());
-        WSACleanup(); return 1;
-    }
-
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server.sin_family = AF_INET;
-    server.sin_port = htons(8888);
-
-    if (connect(sock, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
-        printf("Connect failed: %d\n", WSAGetLastError());
-        closesocket(sock); WSACleanup(); return 1;
-    }
-    puts("Connected to server.");
-
-    while (1) {
-        printf("Enter message: ");
-        if (scanf("%999s", message) != 1) break; // reads up to whitespace
-        if (send(sock, message, (int)strlen(message), 0) == SOCKET_ERROR) {
-            puts("Send failed"); break;
-        }
-        recv_size = recv(sock, server_reply, sizeof(server_reply)-1, 0);
-        if (recv_size == SOCKET_ERROR) { printf("recv failed: %d\n", WSAGetLastError()); break; }
-        server_reply[recv_size] = '\0';
-        printf("Server reply: %s\n", server_reply);
-    }
-
-    closesocket(sock);
-    WSACleanup();
-    return 0;
-}
     
+    printf("WSAStartup failed: %d\n", WSAGetLastError());
+    
+    return 1;
+
+}
+
+
+
+server_sock = socket(AF_INET, SOCK_STREAM, 0);
+
+if (server_sock == INVALID_SOCKET) {
+
+    printf("Could not create socket: %d\n", WSAGetLastError());
+    
+    WSACleanup(); return 1;
+
+}
+
+server.sin_family = AF_INET;
+
+server.sin_addr.s_addr = INADDR_ANY;
+
+server.sin_port = htons(8888);
+
+
+if (bind(server_sock, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
+
+    printf("Bind failed: %d\n", WSAGetLastError());
+    
+    closesocket(server_sock); WSACleanup(); return 1;
+
+}
+
+puts("Bind done. Listening on port 8888...");
+
+listen(server_sock, 3);
+
+c = sizeof(struct sockaddr_in);
+
+client_sock = accept(server_sock, (struct sockaddr *)&client, &c);
+
+if (client_sock == INVALID_SOCKET) {
+
+    printf("Accept failed: %d\n", WSAGetLastError());
+    
+    closesocket(server_sock); WSACleanup(); return 1;
+
+}
+
+puts("Client connected.");
+
+while ((recv_size = recv(client_sock, client_message, sizeof(client_message)-1, 0)) > 0) {
+
+    client_message[recv_size] = '\0';
+    
+    send(client_sock, client_message, recv_size, 0);
+}
+
+
+if (recv_size == 0) puts("Client disconnected");
+
+else printf("recv failed: %d\n", WSAGetLastError());
+
+closesocket(client_sock);
+
+closesocket(server_sock);
+
+WSACleanup();
+
+return 0;
+
+OUTPUT:
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e45d5146-828e-4328-b461-2ac30e5ca5be" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/92d3335e-25bd-4ae7-8088-b7d3704f8190" />
+
+
+
 ## 🎯 RESULT
+
 Thus, a socket program was successfully written to transfer data between client and server, and its performance was studied.
